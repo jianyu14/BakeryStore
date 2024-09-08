@@ -1,43 +1,33 @@
-package BakeryFunction;
+package DAO;
 
+import BakeryFunction.OrderItem;
+//import BakeryFunction.Order;
+//import BakeryFunction.Product;
 import BakeryDatabase.DatabaseUtils;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+public class OrderItemDAO implements Dao<OrderItem> {
 
-public class OrderItemDAO {
-
-    //--------------------------------------------------------//
-    //----------For Check Order History Module----------------//
-
-    // Method to get all OrderItems for a given order ID
-    /*
-    public List<OrderItem> getOrderItemsByOrderID(String orderId) {
-        String query = "SELECT * FROM `OrderItems` WHERE order_id = ?";
+    @Override
+    public List<OrderItem> getAll() {
         List<OrderItem> orderItems = new ArrayList<>();
+        String query = "SELECT * FROM OrderItem";
 
         try (Connection conn = DatabaseUtils.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setString(1, orderId);
-            ResultSet rs = stmt.executeQuery();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 OrderItem orderItem = new OrderItem();
-                orderItem.setOrderItemID(rs.getString("order_item_id"));
-                orderItem.setOrderID(rs.getString("order_id"));
-                orderItem.setProductID(rs.getString("product_id"));
-                orderItem.setOrderQuantity(rs.getInt("order_quantity"));
+                orderItem.setOrderItemId(rs.getString("order_item_id"));
+                orderItem.setOrderId(rs.getString("order_id"));
+                orderItem.setProductId(rs.getString("product_id"));
                 orderItem.setTotalAmount(rs.getDouble("total_amount"));
-                orderItem.setExpireDate(rs.getString("expired_date"));
-
+                orderItem.setExpireDate(rs.getDate("expire_date"));
+                orderItem.setOrderQuantity(rs.getInt("order_quantity"));
                 orderItems.add(orderItem);
             }
         } catch (SQLException e) {
@@ -46,81 +36,88 @@ public class OrderItemDAO {
         return orderItems;
     }
 
-     */
-
-    // Method to add a new OrderItem
-    /*
-    public boolean addOrderItem(OrderItem orderItem) {
-        String query = "INSERT INTO `OrderItems` (order_item_id, order_id, product_id, total_amount, expired_date, order_quantity) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+    @Override
+    public OrderItem getById(String id) {
+        String query = "SELECT * FROM OrderItem WHERE order_item_id = ?";
+        OrderItem orderItem = null;
 
         try (Connection conn = DatabaseUtils.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setString(1, orderItem.getOrderItemID());
-            stmt.setString(2, orderItem.getOrderID());
-            stmt.setString(3, orderItem.getProductID());
+            stmt.setString(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                orderItem = new OrderItem();
+                orderItem.setOrderItemId(rs.getString("order_item_id"));
+                orderItem.setOrderId(rs.getString("order_id"));
+                orderItem.setProductId(rs.getString("product_id"));
+                orderItem.setTotalAmount(rs.getDouble("total_amount"));
+                orderItem.setExpireDate(rs.getDate("expire_date"));
+                orderItem.setOrderQuantity(rs.getInt("order_quantity"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orderItem;
+    }
+
+    @Override
+    public boolean update(OrderItem orderItem) {
+        String query = "UPDATE OrderItem SET order_id = ?, product_id = ?, total_amount = ?, expire_date = ?, order_quantity = ? WHERE order_item_id = ?";
+
+        try (Connection conn = DatabaseUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, orderItem.getOrderId());
+            stmt.setString(2, orderItem.getProductId());
+            stmt.setDouble(3, orderItem.getTotalAmount());
+            stmt.setDate(4, new java.sql.Date(orderItem.getExpireDate().getTime()));
+            stmt.setInt(5, orderItem.getOrderQuantity());
+            stmt.setString(6, orderItem.getOrderItemId());
+
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean deleteById(String id) {
+        String query = "DELETE FROM OrderItem WHERE order_item_id = ?";
+
+        try (Connection conn = DatabaseUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean insert(OrderItem orderItem) {
+        String query = "INSERT INTO OrderItem (order_item_id, order_id, product_id, total_amount, expire_date, order_quantity) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = DatabaseUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, orderItem.getOrderItemId());
+            stmt.setString(2, orderItem.getOrderId());
+            stmt.setString(3, orderItem.getProductId());
             stmt.setDouble(4, orderItem.getTotalAmount());
-            stmt.setString(5, orderItem.getExpireDate());
+            stmt.setDate(5, new java.sql.Date(orderItem.getExpireDate().getTime()));
             stmt.setInt(6, orderItem.getOrderQuantity());
 
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-        return false;
     }
-    */
-
-    // Method to update an existing OrderItem
-    /*
-    public boolean updateOrderItem(OrderItem orderItem) {
-        String query = "UPDATE `OrderItems` SET product_id = ?, total_amount = ?, expire_date = ?, order_quantity = ? " +
-                "WHERE order_item_id = ? AND order_id = ?";
-
-        try (Connection conn = DatabaseUtils.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setString(1, orderItem.getProductID());
-            stmt.setDouble(2, orderItem.getTotalAmount());
-            stmt.setString(3, orderItem.getExpireDate());
-            stmt.setInt(4, orderItem.getOrderQuantity());
-            stmt.setString(5, orderItem.getOrderItemID());
-            stmt.setString(6, orderItem.getOrderID());
-
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-    */
-
-    // Method to delete an OrderItem
-    /*
-    public boolean deleteOrderItem(String orderItemID) {
-        String query = "DELETE FROM `OrderItems` WHERE order_item_id = ?";
-
-        try (Connection conn = DatabaseUtils.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setString(1, orderItemID);
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-     */
-
-    //--------------------------------------------------------//
-    //------------For Create New Order Module-----------------//
 
     public static void saveOrderItems(List<Integer> selectedProductIDs, List<Integer> quantities, List<Double> prices, String orderID) {
         LocalDate expirationDate = LocalDate.now().plusDays(5); // Calculate expiration date as 5 days from now
@@ -180,5 +177,4 @@ public class OrderItemDAO {
             return null;
         }
     }
-
 }

@@ -21,6 +21,7 @@ public class OrderDAO {
         //--------------------------------------------------------//
         //-----------For Check Order History Module---------------//
         // Method to get an Order by Order ID
+        /*
         public Order getOrderByID(String orderId) {
             String query = "SELECT * FROM `Orders` WHERE order_id = ?";
             Order order = null;
@@ -51,7 +52,10 @@ public class OrderDAO {
             return order; // Return the order or null if not found
         }
 
+         */
+
         // Method to update the status of an order
+    /*
         public void updateOrder(Order order) {
             String query = "UPDATE `Orders` SET status = ?, order_date = ?, grand_total_amount = ?, supplier_id = ? WHERE order_id = ?";
 
@@ -74,8 +78,11 @@ public class OrderDAO {
             }
         }
 
+     */
+
         // Method to get all orders from the database
-        public List<Order> getAllOrders() {
+    /*
+    public List<Order> getAllOrders() {
             String query = "SELECT * FROM `Orders`";
             List<Order> orders = new ArrayList<>();
 
@@ -104,8 +111,11 @@ public class OrderDAO {
             return orders;
         }
 
+     */
+
         //--------------------------------------------------------//
         //------------For Create New Order Module-----------------//
+    /*
         public static String generateNewOrderId() {
             String prefix = "ORDA";
             int idLength = 5; // Number of digits in the numeric part of the ID
@@ -164,6 +174,7 @@ public class OrderDAO {
                 return null;
             }
         }
+     */
     }
 
 

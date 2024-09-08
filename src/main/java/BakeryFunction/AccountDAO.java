@@ -12,6 +12,7 @@ import java.sql.*;
 //--------------------------------------------------------//
 //--------------------For Login Module-------------------//
 public class AccountDAO {
+    /*
     public boolean login(String accountId, String password) {
         String query = "SELECT * FROM account WHERE acc_id = ? AND password = ?";
         try (Connection con = DatabaseUtils.getConnection(); // Assuming getConnection is a static method
@@ -86,5 +87,5 @@ public class AccountDAO {
 
         return true;
     }
-
+    */
 }

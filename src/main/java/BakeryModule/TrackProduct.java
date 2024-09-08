@@ -42,7 +42,7 @@ public class TrackProduct {
                     trackWarehouse(scanner);
                     break;
                 case 5:
-                    //product suppiler
+                    //product supplier
                     System.out.println("Product Supplier\n");
                     trackSupplier(scanner);
                     break;

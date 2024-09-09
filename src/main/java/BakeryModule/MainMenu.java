@@ -18,7 +18,7 @@ public class MainMenu {
         int choice;
         do {
             System.out.println();
-            System.out.println("Main MenuXXX:");
+            System.out.println("Main Menu:");
             System.out.println("1. Display Product Data");
             System.out.println("2. Track Product Warehouse");
             System.out.println("3. Track Order History");
